@@ -25,7 +25,7 @@ for icon in needed_icons:
     if 'rain' in parts:
         if {'rain', 'lightning'}.intersection(set(parts)):
             parts[parts.index('cloud')] = 'cloud_grey'
-    if len(parts) >= 1:
+    if len(parts) <= 1:
         if 'sun' in parts:
             parts = ['sun_large']
         if 'moon' in parts:
