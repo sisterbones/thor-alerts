@@ -6,7 +6,7 @@ from rich import print
 from PIL import Image
 
 # Load icons
-with open("../icons.json", "r") as f:
+with open("../thor-alerts/icons.json", "r") as f:
     icons = json.load(f)
 
 needed_icons = []
@@ -42,5 +42,5 @@ for icon in needed_icons:
         # Overlay the part onto the image
         new_icon.paste(image_parts[part], mask=image_parts[part])
 
-    new_icon.save('../assets/icons/' + icon + '.png', 'PNG')
+    new_icon.save('../thor-alerts/assets/icons/' + icon + '.png', 'PNG')
 

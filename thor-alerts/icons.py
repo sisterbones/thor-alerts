@@ -3,6 +3,8 @@
 
 import json
 
+import wx
+
 with open("icons.json", "r") as f:
     icons = json.load(f)
 
@@ -17,3 +19,6 @@ def get_by_freedesktop(icon=None):
 
 def get_by_fafree(icon=None):
     return next((item for item in icons if item["fa-free"] == icon), icon)
+
+class IconArtProvider(wx.ArtProvider):
+    pass

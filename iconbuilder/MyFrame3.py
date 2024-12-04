@@ -6,7 +6,7 @@ import wx
 
 import ui
 
-with open("../icons.json", "r") as f:
+with open("../thor-alerts/icons.json", "r") as f:
     icons = json.load(f)
 
 def get_by_yr(icon=None):
