@@ -16,6 +16,7 @@ current_status = ""
 current_weather = {}
 status_last_update = 0
 
+default_icon = "cloud-rain_heavy-lightning"
 default_icon_tooltip = "THOR"
 
 def setup_config():

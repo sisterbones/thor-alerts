@@ -3,9 +3,9 @@
 import wx
 import wx.adv
 
-import config
-import ui
-from notify import notify
+import thor_alerts.config as config
+import thor_alerts.ui as ui
+from thor_alerts.notify import notify
 
 # Implementing PreferencesDialog
 class ThorAlertsPreferencesDialog(ui.PreferencesDialog):

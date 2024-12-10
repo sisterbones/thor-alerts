@@ -2,11 +2,10 @@
 import json
 import os
 
-from rich import print
 from PIL import Image
 
 # Load icons
-with open("../thor-alerts/icons.json", "r") as f:
+with open("../thor_alerts/icons.json", "r") as f:
     icons = json.load(f)
 
 needed_icons = []
@@ -42,5 +41,11 @@ for icon in needed_icons:
         # Overlay the part onto the image
         new_icon.paste(image_parts[part], mask=image_parts[part])
 
-    new_icon.save('../thor-alerts/assets/icons/' + icon + '.png', 'PNG')
+    timestwo = new_icon.resize((64, 64), Image.Resampling.NEAREST)
+    timesthree = new_icon.resize((96, 96), Image.Resampling.NEAREST)
+    timesfour = new_icon.resize((128, 128), Image.Resampling.NEAREST)
 
+    new_icon.save('../thor_alerts/assets/icons/' + icon + '.png', 'PNG')
+    timestwo.save('../thor_alerts/assets/icons/' + icon + '@2x.png', 'PNG')
+    timesthree.save('../thor_alerts/assets/icons/' + icon + '@3x.png', 'PNG')
+    timesfour.save('../thor_alerts/assets/icons/' + icon + '@4x.png', 'PNG')

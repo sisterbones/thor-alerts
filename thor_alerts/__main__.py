@@ -1,6 +1,7 @@
 
 import asyncio
 import os
+import sys
 import threading
 import time
 
@@ -9,14 +10,17 @@ import wx
 import wx.adv
 import wx.svg
 
-import config
-from ThorAlertsMainFrame import ThorAlertsMainFrame as MainFrame
-from notify import notify
-import icons
+import thor_alerts.config as config
+import thor_alerts.icons as icons
+from thor_alerts.ThorAlertsMainFrame import ThorAlertsMainFrame as MainFrame
+from thor_alerts.notify import notify
 
 config.setup_config()
 
 sio = socketio.Client()
+
+# wx.Image.AddHandler(wx.PNGHandler())
+wx.ArtProvider.Push(icons.ThorIconArtProvider())
 
 class MyTaskBarIcon(wx.adv.TaskBarIcon):
     def __init__(self, frame: MainFrame):
@@ -25,7 +29,7 @@ class MyTaskBarIcon(wx.adv.TaskBarIcon):
         self.frame = frame
 
         if config.get("show_tray_icon"):
-            self.SetIcon(wx.ArtProvider.GetBitmap(b'cloud'), config.default_icon_tooltip)
+            self.SetIcon(wx.ArtProvider.GetBitmap(config.default_icon, wx.ART_OTHER), config.default_icon_tooltip)
 
         # self.Bind(wx.adv.EVT_TASKBAR_LEFT_UP, self.OnTaskBarActivate)
         self.Bind(wx.EVT_MENU, self.OnTaskBarActivate, id=1)
@@ -73,8 +77,6 @@ class ThorApp(wx.App):
 def receive_alert(data):
     print(data)
 
-wx.ArtProvider.Push(icons.ThorIconArtProvider())
-
 app = ThorApp()
 tskic = app.tskic
 frame = app.frame
@@ -84,10 +86,19 @@ def receive_weather(data):
     config.current_weather = data
     config.status_last_update = time.time()
 
+@sio.on('alerts')
+def receive_alert(data):
+    if data.get("refresh"):
+        config.alerts = data.get('alerts')
+        return
+
+    notify(data.get("headline"), data.get("subtitle"), tskic)
+
+
 @sio.on('connect')
 def connected():
     notify("Thor", "Successfully connected to Thor.", tskic)
-    sio.emit('ask', 'weather')
+    sio.emit('ask', 'weather,alerts')
 
 @sio.on('disconnect')
 def disconnected():
