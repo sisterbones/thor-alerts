@@ -25,7 +25,7 @@ class MyTaskBarIcon(wx.adv.TaskBarIcon):
         self.frame = frame
 
         if config.get("show_tray_icon"):
-            self.SetIcon(wx.Icon('testicon.png', wx.BITMAP_TYPE_ANY), config.default_icon_tooltip)
+            self.SetIcon(wx.ArtProvider.GetBitmap(b'cloud'), config.default_icon_tooltip)
 
         # self.Bind(wx.adv.EVT_TASKBAR_LEFT_UP, self.OnTaskBarActivate)
         self.Bind(wx.EVT_MENU, self.OnTaskBarActivate, id=1)
@@ -73,6 +73,8 @@ class ThorApp(wx.App):
 def receive_alert(data):
     print(data)
 
+wx.ArtProvider.Push(icons.ThorIconArtProvider())
+
 app = ThorApp()
 tskic = app.tskic
 frame = app.frame
@@ -86,6 +88,10 @@ def receive_weather(data):
 def connected():
     notify("Thor", "Successfully connected to Thor.", tskic)
     sio.emit('ask', 'weather')
+
+@sio.on('disconnect')
+def disconnected():
+    notify("Thor", "Disconnected from Thor due to an error.", tskic)
 
 def init_socketio():
     while not sio.connected:
