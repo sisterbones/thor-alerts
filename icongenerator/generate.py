@@ -10,6 +10,7 @@ with open("../thor_alerts/icons.json", "r") as f:
 
 needed_icons = []
 for icon in icons:
+    print(icon)
     if icon.get('thoricon'):
         needed_icons.append(icon['thoricon'])
 
@@ -30,12 +31,17 @@ for icon in needed_icons:
         if 'moon' in parts:
             parts = ['moon_large']
 
+    print(icon)
+
     # Try load the icons
+    print("\tparts:")
     for part in parts:
+        print("\t\t" + part)
         if part not in image_parts:
             try:
                 image_parts[part] = Image.open(os.path.join('img', f"{part}.png"))
             except FileNotFoundError:
+                print("\t\t\t!! Can't find "+part)
                 image_parts[part] = Image.new("RGBA", (32, 32))
 
         # Overlay the part onto the image
@@ -46,6 +52,10 @@ for icon in needed_icons:
     timesfour = new_icon.resize((128, 128), Image.Resampling.NEAREST)
 
     new_icon.save('../thor_alerts/assets/icons/' + icon + '.png', 'PNG')
+    print('\t../thor_alerts/assets/icons/' + icon + '.png')
     timestwo.save('../thor_alerts/assets/icons/' + icon + '@2x.png', 'PNG')
+    print('\t../thor_alerts/assets/icons/' + icon + '@2x.png')
     timesthree.save('../thor_alerts/assets/icons/' + icon + '@3x.png', 'PNG')
+    print('\t../thor_alerts/assets/icons/' + icon + '@3x.png')
     timesfour.save('../thor_alerts/assets/icons/' + icon + '@4x.png', 'PNG')
+    print('\t../thor_alerts/assets/icons/' + icon + '@4x.png')

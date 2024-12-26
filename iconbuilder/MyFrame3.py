@@ -83,7 +83,7 @@ class MyFrame3( ui.MyFrame3 ):
         if index: icons[index] = icon
         else: icons.append(icon)
 
-        with open("../icons.json", "w") as f:
+        with open("../thor_alerts/icons.json", "w") as f:
             json.dump(icons, f)
         self.update_tree()
 

@@ -20,7 +20,7 @@ _ = gettext.gettext
 class PreferencesDialog ( wx.Dialog ):
 
     def __init__( self, parent ):
-        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = _(u"Preferences"), pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.RESIZE_BORDER )
+        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = _(u"Preferences"), pos = wx.DefaultPosition, size = wx.Size( 440,256 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.RESIZE_BORDER )
 
         self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
@@ -43,6 +43,42 @@ class PreferencesDialog ( wx.Dialog ):
         self.hub_settings.Layout()
         hub_spacer.Fit( self.hub_settings )
         self.m_notebook2.AddPage( self.hub_settings, _(u"Hub"), False )
+        self.icon_set = wx.Panel( self.m_notebook2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+        bSizer11 = wx.BoxSizer( wx.VERTICAL )
+
+        self.current_icon_set_label = wx.StaticText( self.icon_set, wx.ID_ANY, _(u"The current iconset is <b>THORICON</b>"), wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.current_icon_set_label.SetLabelMarkup( _(u"The current iconset is <b>THORICON</b>") )
+        self.current_icon_set_label.Wrap( -1 )
+
+        bSizer11.Add( self.current_icon_set_label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+
+        self.m_staticText7 = wx.StaticText( self.icon_set, wx.ID_ANY, _(u"Click a button to change your icons!"), wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText7.Wrap( -1 )
+
+        bSizer11.Add( self.m_staticText7, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.BOTTOM|wx.RIGHT|wx.LEFT, 5 )
+
+        bSizer12 = wx.BoxSizer( wx.HORIZONTAL )
+
+        self.set_thoricons_button = wx.Button( self.icon_set, wx.ID_ANY, _(u"THORICON"), wx.DefaultPosition, wx.DefaultSize, 0 )
+
+        self.set_thoricons_button.SetBitmap( wx.ArtProvider.GetBitmap( "sun-cloud-rain_heavy-lightning", wx.ART_MENU ) )
+        bSizer12.Add( self.set_thoricons_button, 1, wx.ALL|wx.EXPAND, 5 )
+
+        self.set_freedesktop_button = wx.Button( self.icon_set, wx.ID_ANY, _(u"Freedesktop"), wx.DefaultPosition, wx.DefaultSize, 0 )
+
+        self.set_freedesktop_button.SetBitmap( wx.ArtProvider.GetBitmap( "weather-showers-scattered-storm-day", wx.ART_BUTTON ) )
+        self.set_freedesktop_button.Enable( False )
+
+        bSizer12.Add( self.set_freedesktop_button, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+        bSizer11.Add( bSizer12, 1, wx.EXPAND, 5 )
+
+
+        self.icon_set.SetSizer( bSizer11 )
+        self.icon_set.Layout()
+        bSizer11.Fit( self.icon_set )
+        self.m_notebook2.AddPage( self.icon_set, _(u"Icons"), True )
         self.notification_settings = wx.Panel( self.m_notebook2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         bSizer7 = wx.BoxSizer( wx.VERTICAL )
 
@@ -57,7 +93,7 @@ class PreferencesDialog ( wx.Dialog ):
         self.notification_settings.SetSizer( bSizer7 )
         self.notification_settings.Layout()
         bSizer7.Fit( self.notification_settings )
-        self.m_notebook2.AddPage( self.notification_settings, _(u"Notifications"), True )
+        self.m_notebook2.AddPage( self.notification_settings, _(u"Notifications"), False )
 
         preferences_sizer.Add( self.m_notebook2, 1, wx.EXPAND|wx.ALL, 5 )
 
@@ -68,16 +104,17 @@ class PreferencesDialog ( wx.Dialog ):
         dialog_buttons.AddButton( self.dialog_buttonsCancel )
         dialog_buttons.Realize()
 
-        preferences_sizer.Add( dialog_buttons, 0, wx.SHAPED|wx.EXPAND|wx.ALIGN_RIGHT, 5 )
+        preferences_sizer.Add( dialog_buttons, 0, wx.SHAPED|wx.EXPAND|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 
         self.SetSizer( preferences_sizer )
         self.Layout()
-        preferences_sizer.Fit( self )
 
         self.Centre( wx.BOTH )
 
         # Connect Events
+        self.set_thoricons_button.Bind( wx.EVT_BUTTON, self.set_thoricon )
+        self.set_freedesktop_button.Bind( wx.EVT_BUTTON, self.set_freedesktop )
         self.m_toggleBtn1.Bind( wx.EVT_TOGGLEBUTTON, self.on_notification_test )
 
     def __del__( self ):
@@ -85,6 +122,12 @@ class PreferencesDialog ( wx.Dialog ):
 
 
     # Virtual event handlers, override them in your derived class
+    def set_thoricon( self, event ):
+        event.Skip()
+
+    def set_freedesktop( self, event ):
+        event.Skip()
+
     def on_notification_test( self, event ):
         event.Skip()
 
@@ -128,7 +171,7 @@ class MainFrame ( wx.Frame ):
 
         weather_sizer.Add( self.m_staticText5, 0, wx.ALIGN_CENTER_HORIZONTAL, 5 )
 
-        self.weather_icon = wx.StaticBitmap( self.m_panel3, wx.ID_ANY, wx.ArtProvider.GetBitmap( wx.ART_QUESTION, wx.ART_CMN_DIALOG ), wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.weather_icon = wx.StaticBitmap( self.m_panel3, wx.ID_ANY, wx.ArtProvider.GetBitmap( wx.ART_NORMAL_FILE, wx.ART_CMN_DIALOG ), wx.DefaultPosition, wx.DefaultSize, 0 )
         self.weather_icon.SetMinSize( wx.Size( 64,64 ) )
 
         weather_sizer.Add( self.weather_icon, 0, wx.ALIGN_CENTER_HORIZONTAL, 5 )
@@ -142,6 +185,16 @@ class MainFrame ( wx.Frame ):
 
 
         gSizer1.Add( weather_sizer, 1, wx.EXPAND, 5 )
+
+        self.alerts_container = wx.ScrolledWindow( self.m_panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.HSCROLL|wx.VSCROLL )
+        self.alerts_container.SetScrollRate( 5, 5 )
+        bSizer10 = wx.BoxSizer( wx.HORIZONTAL )
+
+
+        self.alerts_container.SetSizer( bSizer10 )
+        self.alerts_container.Layout()
+        bSizer10.Fit( self.alerts_container )
+        gSizer1.Add( self.alerts_container, 1, wx.ALL|wx.EXPAND, 5 )
 
 
         bSizer4.Add( gSizer1, 1, wx.EXPAND, 5 )

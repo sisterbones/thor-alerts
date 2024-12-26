@@ -7,7 +7,7 @@ import os
 import sys
 
 import wx
-from PIL import Image
+# from PIL import Image
 
 base_path = os.path.dirname(str(sys.modules['__main__'].__file__))
 
@@ -26,22 +26,23 @@ def get_by_freedesktop(icon=None):
 def get_by_fafree(icon=None):
     return next((item for item in icons if item["fa-free"] == icon), icon)
 
-def get_thoricon(icon="sun-cloud-rain-thunder", size=(32, 32)):
+def get_thoricon(icon="sun-cloud-rain-thunder"):
     try:
         img = Image.open(os.path.join(base_path, 'assets', 'icons', f'{str(icon)}.png'))
     except:
         print("Image not found")
         return None
 
-    if size != (32, 32):
-        img = img.resize((size[0], size[1]), Image.Resampling.NEAREST)
     img_bytes = io.BytesIO()
     img.save(img_bytes, format="PNG")
     return img_bytes
 
-def get_thoricon_bitmap(icon="sun-cloud-rain-thunder", size=(32, 32)):
+def get_thoricon_bitmap(icon="sun-cloud-rain-thunder", scale=1):
     # thoricon = get_thoricon(icon, size)
-    return wx.Bitmap(wx.Image(os.path.join(base_path, 'assets', 'icons', f'{str(icon)}.png')))
+    filename = f'{str(icon)}.png'
+    if 2 >= scale >= 4:
+        filename = f'{str(icon)}@{scale}x.png'
+    return wx.Bitmap(wx.Image(os.path.join(base_path, 'assets', 'icons', filename)))
 
 class ThorIconArtProvider(wx.ArtProvider):
     def __init__(self):
@@ -52,8 +53,18 @@ class ThorIconArtProvider(wx.ArtProvider):
 
         bmp = wx.NullBitmap
 
-        if os.path.exists(os.path.join(base_path, 'assets', 'icons', f'{str(id)}.png')):
+        scale = size.width // 32
+
+        if client == wx.ART_CMN_DIALOG: scale = 3
+        if client == wx.ART_MENU: scale = 2
+        if client == wx.ART_OTHER: scale = 4
+
+        filename = f'{str(id)}.png'
+        if 2 >= scale >= 4:
+            filename = f'{str(id)}@{scale}x.png'
+
+        if os.path.exists(os.path.join(base_path, 'assets', 'icons', filename)):
             print("Icon exists")
-            bmp = get_thoricon_bitmap(id, (32, 32))
+            bmp = get_thoricon_bitmap(id, scale)
 
         return bmp
