@@ -1,20 +1,28 @@
 
 import asyncio
+import os
+import pathlib
 import platform
+import sys
 
 import wx.adv
 
 from desktop_notifier import DesktopNotifier, Icon
 
-async def async_notify(title, message, taskbaricon:wx.adv.TaskBarIcon=None):
-    notifier = DesktopNotifier(
-        "Thor"
-    )
+base_path = os.path.dirname(str(sys.modules['__main__'].__file__))
 
+notifier = DesktopNotifier(
+    "Thor"
+)
+
+async def async_notify(title, message, taskbaricon:wx.adv.TaskBarIcon=None, notification_icon=None):
     if taskbaricon:
-        if taskbaricon.ShowBalloon(title, message) and platform.release() not in ["10", "11"]:
-            return
-    await notifier.send(title=title, message=message)
+        if platform.release() not in ["8.1", "10", "11"]:
+            taskbaricon.ShowBalloon(title, message)
 
-def notify(title, message, taskbaricon:wx.adv.TaskBarIcon=None):
-    asyncio.run(async_notify(title, message, taskbaricon))
+    icon = Icon(path=pathlib.Path(os.path.join(base_path, "assets", "icons", f"{notification_icon}@4x.png")))
+
+    await notifier.send(title=title, message=message, icon=icon)
+
+def notify(title, message, taskbaricon:wx.adv.TaskBarIcon=None, notification_icon="alert"):
+    asyncio.run(async_notify(title, message, taskbaricon, notification_icon))

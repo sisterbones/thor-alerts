@@ -28,7 +28,7 @@ class MyTaskBarIcon(wx.adv.TaskBarIcon):
 
         self.frame = frame
 
-        if config.get("show_tray_icon"):
+        if config.get("show_tray_icon", True):
             self.SetIcon(wx.ArtProvider.GetBitmap(config.default_icon, wx.ART_OTHER), config.default_icon_tooltip)
 
         # self.Bind(wx.adv.EVT_TASKBAR_LEFT_UP, self.OnTaskBarActivate)
@@ -92,17 +92,17 @@ def receive_alert(data):
         config.alerts = data.get('alerts')
         return
 
-    notify(data.get("headline"), data.get("subtitle"), tskic)
+    notify(data.get("headline"), data.get("subtitle"), tskic, "alert_catastrophic")
 
 
 @sio.on('connect')
 def connected():
-    notify("Thor", "Successfully connected to Thor.", tskic)
+    notify("Thor", "Successfully connected to Thor.", tskic, "sun-cloud-rain-lightning")
     sio.emit('ask', 'weather,alerts')
 
 @sio.on('disconnect')
 def disconnected():
-    notify("Thor", "Disconnected from Thor due to an error.", tskic)
+    notify("Thor", "Disconnected from Thor due to an error.", tskic, "alert")
 
 def init_socketio():
     while not sio.connected:
