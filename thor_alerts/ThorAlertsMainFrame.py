@@ -104,9 +104,9 @@ class ThorAlertsMainFrame(ui.MainFrame):
                 "%I:%M:%S"))
         self.weather_headline.SetLabelText(weather.get('headline', 'Unknown'))
         icon_name = wx.ArtProvider.GetBitmap(
-            icons.get_by_yr(weather.get('conditions', 'weather-none-available')).get('thoricon'),
+            icons.get_by_yr(weather.get('conditions', {"thoricon": "alert"})).get('thoricon'),
             size=wx.Size(64, 64))
-        if config.get("ICON_SET", "freedesktop") == "freedesktop":
+        if config.get("ICON_SET", "thoricon") == "freedesktop":
             icon_name = icons.get_by_yr(weather.get('conditions', {"freedesktop": "weather-none-available"})).get(
                 'freedesktop',
                 "weather-none-available")

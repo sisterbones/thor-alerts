@@ -19,6 +19,8 @@ class ThorAlertsPreferencesDialog(ui.PreferencesDialog):
         self.input_HubURL.SetValue(config.get("hub_url", ""))
         self.checkbox_TrayIcon.SetValue(config.get("show_tray_icon", True))
 
+        self.current_icon_set_label.SetLabelMarkup(f"The current iconset is <b>{config.get("ICON_SET", "thoricon")}</b>")
+
         if "linux" in platform.platform(True).casefold():
             self.set_freedesktop_button.Enable()
 
@@ -26,9 +28,9 @@ class ThorAlertsPreferencesDialog(ui.PreferencesDialog):
         notify("Hello world!", "This is a test notification.", self.tskic)
 
     def set_thoricon( self, event ):
-        self.current_icon_set_label.SetLabelMarkup("The current iconset is <b>THORICON</b>")
+        self.current_icon_set_label.SetLabelMarkup("The current iconset is <b>thoricon</b>")
         config.set("ICON_SET", "thoricon")
 
     def set_freedesktop( self, event ):
-        self.current_icon_set_label.SetLabelMarkup("The current iconset is <b>Freedesktop</b>")
+        self.current_icon_set_label.SetLabelMarkup("The current iconset is <b>freedesktop</b>")
         config.set("ICON_SET", "freedesktop")
