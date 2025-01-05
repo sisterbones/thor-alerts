@@ -9,7 +9,7 @@ import sys
 import wx
 # from PIL import Image
 
-base_path = os.path.dirname(str(sys.modules['__main__'].__file__))
+base_path = (os.environ.get("BASE_PATH") or os.path.dirname(str(sys.modules[__name__].__file__)))
 
 with open(os.path.join(base_path, 'icons.json'), "r") as f:
     icons = json.load(f)
@@ -64,7 +64,6 @@ class ThorIconArtProvider(wx.ArtProvider):
             filename = f'{str(id)}@{scale}x.png'
 
         if os.path.exists(os.path.join(base_path, 'assets', 'icons', filename)):
-            print("Icon exists")
             bmp = get_thoricon_bitmap(id, scale)
 
         return bmp

@@ -103,16 +103,28 @@ class ThorAlertsMainFrame(ui.MainFrame):
             "Last updated " + datetime.datetime.fromtimestamp(weather.get("timestamp", time.time())).strftime(
                 "%I:%M:%S"))
         self.weather_headline.SetLabelText(weather.get('headline', 'Unknown'))
-        icon_name = wx.ArtProvider.GetBitmap(
-            icons.get_by_yr(weather.get('conditions', {"thoricon": "alert"})).get('thoricon'),
-            size=wx.Size(64, 64))
+
         if config.get("ICON_SET", "thoricon") == "freedesktop":
-            icon_name = icons.get_by_yr(weather.get('conditions', {"freedesktop": "weather-none-available"})).get(
+            weather_icon_name = icons.get_by_yr(
+                weather.get('conditions', {"freedesktop": "weather-none-available"})).get(
                 'freedesktop',
                 "weather-none-available")
         else:
-            icon_name = icons.get_by_yr(weather.get('conditions', {"thoricon": config.default_icon})).get('thoricon',
-                                                                                                          config.default_icon)
+            print(icons.get_by_yr(weather.get('conditions', {"thoricon": config.default_icon})))
+            weather_icon_name = icons.get_by_yr(weather.get('conditions', {"thoricon": config.default_icon})).get(
+                'thoricon',
+                config.default_icon)
+
+        icon_name = weather_icon_name
+        if config.alerts:
+            sort = sorted(config.alerts, key=lambda x: x.get('severity', 0), reverse=True)
+
+            if sort[0].get('severity', 0) >= 3:
+                icon_name = 'alert_catastrophic'
+            elif sort[0].get('severity', 0) >= 2:
+                icon_name = 'alert_severe'
+            elif sort[0].get('severity', 0) >= 1:
+                icon_name = 'alert_moderate'
 
         icon = wx.ArtProvider.GetBitmap(
             icon_name,

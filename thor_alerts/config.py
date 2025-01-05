@@ -11,6 +11,8 @@ print(config_dir)
 
 conf = {}
 
+alerts = []
+
 weather_img = None
 current_status = ""
 current_weather = {}

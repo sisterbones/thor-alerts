@@ -1,4 +1,3 @@
-
 import asyncio
 import os
 import sys
@@ -22,6 +21,7 @@ sio = socketio.Client()
 # wx.Image.AddHandler(wx.PNGHandler())
 wx.ArtProvider.Push(icons.ThorIconArtProvider())
 
+
 class MyTaskBarIcon(wx.adv.TaskBarIcon):
     def __init__(self, frame: MainFrame):
         wx.adv.TaskBarIcon.__init__(self)
@@ -35,8 +35,6 @@ class MyTaskBarIcon(wx.adv.TaskBarIcon):
         self.Bind(wx.EVT_MENU, self.OnTaskBarActivate, id=1)
         self.Bind(wx.EVT_MENU, self.OnTaskBarShowPreferences, id=2)
         self.Bind(wx.EVT_MENU, self.OnTaskBarClose, id=3)
-
-    #-----------------------------------------------------------------------
 
     def CreatePopupMenu(self):
         menu = wx.Menu()
@@ -58,11 +56,12 @@ class MyTaskBarIcon(wx.adv.TaskBarIcon):
         self.Destroy()
         self.frame.Destroy()
 
+
 class ThorApp(wx.App):
     def OnInit(self):
         frame = MainFrame(None)
         frame.Show(True)
-        self.frame=frame
+        self.frame = frame
         self.tskic = MyTaskBarIcon(frame)
         frame.tskic = self.tskic
         self.SetTopWindow(frame)
@@ -74,23 +73,26 @@ class ThorApp(wx.App):
     # def onFrameDestroy(self, event):
     #     self.tskic.Destroy()
 
-def receive_alert(data):
-    print(data)
 
 app = ThorApp()
 tskic = app.tskic
 frame = app.frame
+
 
 @sio.on('weather')
 def receive_weather(data):
     config.current_weather = data
     config.status_last_update = time.time()
 
+
 @sio.on('alerts')
 def receive_alert(data):
     if data.get("refresh"):
         config.alerts = data.get('alerts')
         return
+
+    else:
+        config.alerts.append(data)
 
     notify(data.get("headline"), data.get("subtitle"), tskic, "alert_catastrophic")
 
@@ -100,21 +102,26 @@ def connected():
     notify("Thor", "Successfully connected to Thor.", tskic, "sun-cloud-rain-lightning")
     sio.emit('ask', 'weather,alerts')
 
+
 @sio.on('disconnect')
 def disconnected():
     notify("Thor", "Disconnected from Thor due to an error.", tskic, "alert")
+
 
 def init_socketio():
     while not sio.connected:
         try:
             sio.connect(config.get("hub_url", "http://localhost:8467"))
         except socketio.exceptions.ConnectionError:
-            config.current_status = "Failed to connect to {}. Is it running?".format(config.get("hub_url", "http://localhost:8467"))
+            config.current_status = "Failed to connect to {}. Is it running?".format(
+                config.get("hub_url", "http://localhost:8467"))
+
 
 def main():
     global tskic, frame
     sio_thread = threading.Thread(target=init_socketio, daemon=True)
     sio_thread.start()
     app.MainLoop()
+
 
 if __name__ == "__main__": main()
